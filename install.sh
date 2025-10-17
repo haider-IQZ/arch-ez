@@ -214,6 +214,7 @@ echo ""
 
 # Install base system with all essential packages
 echo "Installing base system (this will take a few minutes)..."
+echo "This includes gaming dependencies from ChrisTitus gaming-setup..."
 pacstrap -K /mnt \
     base \
     base-devel \
@@ -228,7 +229,51 @@ pacstrap -K /mnt \
     pipewire-pulse \
     nvidia-open-dkms \
     nvidia-utils \
-    nvidia-settings
+    nvidia-settings \
+    wine \
+    dbus \
+    git \
+    gnutls \
+    lib32-gnutls \
+    gtk2 \
+    gtk3 \
+    lib32-gtk2 \
+    lib32-gtk3 \
+    libpulse \
+    lib32-libpulse \
+    alsa-lib \
+    lib32-alsa-lib \
+    alsa-utils \
+    alsa-plugins \
+    lib32-alsa-plugins \
+    giflib \
+    lib32-giflib \
+    libpng \
+    lib32-libpng \
+    libldap \
+    lib32-libldap \
+    openal \
+    lib32-openal \
+    libxcomposite \
+    lib32-libxcomposite \
+    libxinerama \
+    lib32-libxinerama \
+    ncurses \
+    lib32-ncurses \
+    vulkan-icd-loader \
+    lib32-vulkan-icd-loader \
+    ocl-icd \
+    lib32-ocl-icd \
+    libva \
+    lib32-libva \
+    gst-plugins-base-libs \
+    lib32-gst-plugins-base-libs \
+    sdl2 \
+    lib32-sdl2 \
+    v4l-utils \
+    lib32-v4l-utils \
+    sqlite \
+    lib32-sqlite
 
 echo "✓ Base system installed"
 echo ""
@@ -253,6 +298,16 @@ echo ""
 cat > /mnt/root/configure.sh << 'CHROOT_EOF'
 #!/bin/bash
 set -e
+
+echo "Enabling multilib repository for 32-bit gaming support..."
+if ! grep -q "^\s*\[multilib\]" /etc/pacman.conf; then
+    echo "[multilib]" >> /etc/pacman.conf
+    echo "Include = /etc/pacman.d/mirrorlist" >> /etc/pacman.conf
+    pacman -Sy
+    echo "✓ Multilib enabled"
+else
+    echo "✓ Multilib already enabled"
+fi
 
 echo "Setting timezone to Asia/Baghdad..."
 ln -sf /usr/share/zoneinfo/Asia/Baghdad /etc/localtime
