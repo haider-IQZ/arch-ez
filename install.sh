@@ -203,24 +203,12 @@ echo ""
 echo "Optimizing mirror list for faster downloads..."
 if command -v reflector &> /dev/null; then
     echo "Using reflector to find fastest mirrors..."
-    reflector --country Iraq,Turkey,UAE,Jordan,Kuwait --latest 10 --protocol https --sort rate --save /etc/pacman.d/mirrorlist
+    # Try Middle East first, fallback to Germany
+    reflector --country Germany,Turkey,UAE --latest 10 --protocol https --sort rate --save /etc/pacman.d/mirrorlist 2>/dev/null || \
+    reflector --country Germany --latest 10 --protocol https --sort rate --save /etc/pacman.d/mirrorlist
     echo "✓ Mirrors optimized with reflector"
 else
-    echo "reflector not found, using rankmirrors..."
-    # Backup original mirrorlist
-    cp /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist.backup
-    
-    # Uncomment all mirrors and rank them
-    sed -i 's/^#Server/Server/' /etc/pacman.d/mirrorlist
-    
-    # Use rankmirrors if available (faster than testing all)
-    if command -v rankmirrors &> /dev/null; then
-        rankmirrors -n 6 /etc/pacman.d/mirrorlist > /etc/pacman.d/mirrorlist.new
-        mv /etc/pacman.d/mirrorlist.new /etc/pacman.d/mirrorlist
-        echo "✓ Mirrors ranked"
-    else
-        echo "! Using default mirrors (might be slow)"
-    fi
+    echo "reflector not found, using default mirrors..."
 fi
 echo ""
 
