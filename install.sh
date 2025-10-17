@@ -200,8 +200,29 @@ echo "======================================"
 echo ""
 
 # Update pacman mirrors for faster downloads
-echo "Updating mirror list..."
-reflector --latest 20 --protocol https --sort rate --save /etc/pacman.d/mirrorlist 2>/dev/null || echo "reflector not available, using default mirrors"
+echo "Optimizing mirror list for faster downloads..."
+if command -v reflector &> /dev/null; then
+    echo "Using reflector to find fastest mirrors..."
+    reflector --country Iraq,Turkey,UAE,Jordan,Kuwait --latest 10 --protocol https --sort rate --save /etc/pacman.d/mirrorlist
+    echo "✓ Mirrors optimized with reflector"
+else
+    echo "reflector not found, using rankmirrors..."
+    # Backup original mirrorlist
+    cp /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist.backup
+    
+    # Uncomment all mirrors and rank them
+    sed -i 's/^#Server/Server/' /etc/pacman.d/mirrorlist
+    
+    # Use rankmirrors if available (faster than testing all)
+    if command -v rankmirrors &> /dev/null; then
+        rankmirrors -n 6 /etc/pacman.d/mirrorlist > /etc/pacman.d/mirrorlist.new
+        mv /etc/pacman.d/mirrorlist.new /etc/pacman.d/mirrorlist
+        echo "✓ Mirrors ranked"
+    else
+        echo "! Using default mirrors (might be slow)"
+    fi
+fi
+echo ""
 
 # Install base system with all essential packages
 echo "Installing base system (this will take a few minutes)..."
