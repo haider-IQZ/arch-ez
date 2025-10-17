@@ -223,6 +223,7 @@ pacstrap -K /mnt \
     grub \
     efibootmgr \
     vim \
+    git \
     networkmanager \
     pipewire \
     pipewire-pulse \
