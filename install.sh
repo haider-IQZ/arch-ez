@@ -203,8 +203,8 @@ echo ""
 echo "Optimizing mirror list for faster downloads..."
 if command -v reflector &> /dev/null; then
     echo "Using reflector to find fastest mirrors..."
-    # Try Middle East first, fallback to Germany
-    reflector --country Germany,Turkey,UAE --latest 10 --protocol https --sort rate --save /etc/pacman.d/mirrorlist 2>/dev/null || \
+    # Use Germany and Turkey mirrors (best for Iraq)
+    reflector --country Germany,Turkey --latest 10 --protocol https --sort rate --save /etc/pacman.d/mirrorlist 2>/dev/null || \
     reflector --country Germany --latest 10 --protocol https --sort rate --save /etc/pacman.d/mirrorlist
     echo "✓ Mirrors optimized with reflector"
 else
